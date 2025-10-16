@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Rewards - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .hidden { display: none; }
+        .nav-item.active { color: #f97316; } /* Naranja para el item activo */
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div id="loader" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+    </div>
+
+    <div id="admin-login-section" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Admin Panel Login</h2>
+            <form id="admin-login-form">
+                <div class="mb-4"><label for="admin-email" class="block text-gray-700 text-sm font-bold mb-2">Email</label><input type="email" id="admin-email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></div>
+                <div class="mb-6"><label for="admin-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label><input type="password" id="admin-password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" required></div>
+                <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="hidden">
+        <main id="admin-content" class="p-4 pb-24"></main>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t z-30">
+            <div class="flex justify-around max-w-screen-sm mx-auto">
+                <button onclick="navigateAdmin('tasks')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"></path></svg><span class="text-xs">Tasks</span></button>
+                <button onclick="navigateAdmin('verifications')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg><span class="text-xs">Verifications</span></button>
+                <button onclick="navigateAdmin('redemptions')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg><span class="text-xs">Redemptions</span></button>
+                <button onclick="navigateAdmin('history')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg><span class="text-xs">History</span></button>
+                <button onclick="navigateAdmin('rewards')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12z"></path></svg><span class="text-xs">Rewards</span></button>
+                <button onclick="navigateAdmin('packages')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg><span class="text-xs">Packages</span></button>
+                <button onclick="navigateAdmin('users')" class="nav-item flex-1 flex flex-col items-center justify-center gap-1 py-2 text-gray-700 hover:text-orange-500 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-xs">Users</span></button>
+            </div>
+        </nav>
+    </div>
+
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-60 z-40 hidden items-center justify-center p-4"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, set, push, remove, query, orderByChild, equalTo, update, increment } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_Hoz_89k297oqNrdeNtxVNfvqYnzmSxU",
+            authDomain: "task-rewards-6fd0c.firebaseapp.com",
+            projectId: "task-rewards-6fd0c",
+            storageBucket: "task-rewards-6fd0c.firebasestorage.app",
+            messagingSenderId: "956035629617",
+            appId: "1:956035629617:web:06cf5ee46b08aae01b8b10"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        
+        // El resto del código completo y funcional...
+        const loader = document.getElementById('loader');
+        const loginSection = document.getElementById('admin-login-section');
+        const loginForm = document.getElementById('admin-login-form');
+        const dashboard = document.getElementById('admin-dashboard');
+        const adminContent = document.getElementById('admin-content');
+        const modalContainer = document.getElementById('modal-container');
+        let subtaskCounter = 0;
+        window.currentUserHistory = {}; // Almacenará los datos para el modal de historial
+
+        onAuthStateChanged(auth, async (user) => {
+            loader.classList.add('hidden');
+            if (user) {
+                const adminRef = ref(db, `admins/${user.uid}`);
+                try {
+                    const adminSnapshot = await get(adminRef);
+                    if (adminSnapshot.exists()) {
+                        loginSection.classList.add('hidden');
+                        dashboard.classList.remove('hidden');
+                        navigateAdmin('tasks'); 
+                    } else {
+                        alert("Acceso Denegado. No tienes permisos de administrador.");
+                        await signOut(auth);
+                    }
+                } catch (error) {
+                    alert(`Error de permisos al consultar la base de datos: ${error.message}`);
+                    await signOut(auth);
+                }
+            } else {
+                loginSection.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+            }
+        });
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            loader.classList.remove('hidden');
+            try { await signInWithEmailAndPassword(auth, email, password); }
+            catch (error) { alert(`Login failed: ${error.message}`); }
+            finally { loader.classList.add('hidden'); }
+        });
+        
+        function navigateAdmin(page) {
+            adminContent.innerHTML = ''; loader.classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`button[onclick="navigateAdmin('${page}')"]`).classList.add('active');
+            const pageLoaders = {
+                'tasks': loadTaskManagement, 'verifications': loadVerifications,
+                'redemptions': loadRedemptions, 'history': loadHistoryPage,
+                'rewards': loadRewardsManagement, 'packages': loadPointPackages, 'users': loadUserManagement
+            };
+            if(pageLoaders[page]) pageLoaders[page]();
+            loader.classList.add('hidden');
+        }
+
+        async function handleVerification(verificationId, status) {
+            const vSnapshot = await get(ref(db, `verifications/${verificationId}`));
+            const v = vSnapshot.val();
+            const updates = {};
+            updates[`verifications/${verificationId}/status`] = status;
+            if (status === 'approved') {
+                const taskSnapshot = await get(ref(db, `tasks/${v.taskId}`));
+                if (taskSnapshot.exists()) {
+                    const task = taskSnapshot.val();
+                    updates[`users/${v.userId}/completedTasks/${v.taskId}/status`] = 'approved';
+                    updates[`users/${v.userId}/points`] = increment(task.points);
+                }
+            } else {
+                updates[`users/${v.userId}/completedTasks/${v.taskId}/status`] = 'rejected';
+            }
+            try { await update(ref(db), updates); alert(`Verification ${status}.`); } 
+            catch (error) { console.error("Error updating verification:", error); alert(`Failed to update verification: ${error.message}`); }
+        }
+
+        async function loadHistoryPage() {
+            adminContent.innerHTML = `<h1 class="text-3xl font-bold mb-6">Approved Task History</h1><div id="history-list" class="space-y-3"></div>`;
+            const container = document.getElementById('history-list');
+            loader.classList.remove('hidden');
+            const usersSnapshot = await get(ref(db, 'users'));
+            if (!usersSnapshot.exists()) { container.innerHTML = `<p class="text-center text-gray-500 bg-white p-4 rounded-lg shadow">No users found.</p>`; loader.classList.add('hidden'); return; }
+            const usersWithHistory = [];
+            usersSnapshot.forEach(userSnapshot => {
+                const user = userSnapshot.val();
+                if (user.completedTasks) {
+                    const hasApprovedTasks = Object.values(user.completedTasks).some(task => task.status === 'approved');
+                    if (hasApprovedTasks) usersWithHistory.push({ uid: userSnapshot.key, email: user.email });
+                }
+            });
+            if (usersWithHistory.length === 0) { container.innerHTML = `<p class="text-center text-gray-500 bg-white p-4 rounded-lg shadow">No users with approved tasks yet.</p>`; } 
+            else { container.innerHTML = usersWithHistory.map(user => `<div class="bg-white p-4 rounded-lg shadow flex justify-between items-center"><span class="font-medium">${user.email || 'No email'}</span><button onclick="viewUserTaskHistory('${user.uid}', '${user.email || 'No email'}')" class="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-600">View Details</button></div>`).join(''); }
+            loader.classList.add('hidden');
+        }
+
+        async function viewUserTaskHistory(userId, userEmail) {
+            loader.classList.remove('hidden');
+            window.currentHistoryUserId = userId; window.currentHistoryUserEmail = userEmail;
+            const snapshot = await get(ref(db, `users/${userId}/completedTasks`));
+            const completedTasks = snapshot.val();
+            if (!completedTasks) { alert('No task history for this user.'); loader.classList.add('hidden'); return; }
+            const approvedTasks = Object.entries(completedTasks).filter(([id, data]) => data.status === 'approved');
+            if (approvedTasks.length === 0) { alert('No approved tasks for this user.'); loader.classList.add('hidden'); return; }
+            
+            window.currentUserHistory = Object.fromEntries(approvedTasks);
+            
+            const taskPromises = approvedTasks.map(([taskId, data]) => get(ref(db, `tasks/${taskId}/title`)));
+            const taskTitles = await Promise.all(taskPromises);
+            
+            const historyHtml = approvedTasks.map(([taskId, data], index) => {
+                const title = taskTitles[index].val() || 'Deleted Task';
+                return `<li><button onclick="showProofModal('${taskId}')" class="text-blue-500 hover:underline w-full text-left">${title}</button></li>`;
+            }).join('');
+
+            modalContainer.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg"><h3 class="text-xl font-bold mb-4">Approved History for ${userEmail}</h3><ul class="list-disc list-inside space-y-2">${historyHtml}</ul><div class="flex justify-end mt-6"><button onclick="closeModal()" class="bg-gray-300 px-4 py-2 rounded">Close</button></div></div>`;
+            modalContainer.classList.add('flex'); modalContainer.classList.remove('hidden');
+            loader.classList.add('hidden');
+        }
+
+        async function showProofModal(taskId) {
+            const submissionData = window.currentUserHistory[taskId]?.submission;
+            if (!submissionData) { alert('Could not find submission data.'); return; }
+
+            const taskTitle = (await get(ref(db, `tasks/${taskId}/title`))).val() || "Task";
+            let proofHtml = '';
+            
+            if (submissionData.photoBase64 || submissionData.answer) { // Simple task
+                if(submissionData.answer) proofHtml += `<div class="mb-2"><p class="font-semibold">Answer:</p><p class="p-2 bg-gray-100 rounded">${submissionData.answer}</p></div>`;
+                if(submissionData.photoBase64) proofHtml += `<div><p class="font-semibold">Photo Proof:</p><img src="${submissionData.photoBase64}" class="w-32 h-32 object-cover rounded mt-1 cursor-pointer" onclick="viewImageModal('${submissionData.photoBase64}')"></div>`;
+            } else if (typeof submissionData === 'object') { // Compound task
+                proofHtml = '<div class="space-y-4">';
+                for (const stepIndex of Object.keys(submissionData).sort()) {
+                    const stepSubmission = submissionData[stepIndex];
+                    proofHtml += `<div class="p-2 border-t"><h4 class="font-bold">Step ${parseInt(stepIndex) + 1}</h4>`;
+                    if(stepSubmission.answer) proofHtml += `<div class="mt-2"><p class="font-semibold">Answer:</p><p class="p-2 bg-gray-100 rounded">${stepSubmission.answer}</p></div>`;
+                    if(stepSubmission.photoBase64) proofHtml += `<div class="mt-2"><p class="font-semibold">Photo Proof:</p><img src="${stepSubmission.photoBase64}" class="w-32 h-32 object-cover rounded mt-1 cursor-pointer" onclick="viewImageModal('${stepSubmission.photoBase64}')"></div>`;
+                    proofHtml += `</div>`;
+                }
+                proofHtml += '</div>';
+            }
+
+            modalContainer.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Proof for: ${taskTitle}</h3><button onclick="closeModal()" class="text-2xl font-bold">&times;</button></div><div class="overflow-y-auto flex-1">${proofHtml}</div><div class="flex justify-start mt-6"><button onclick="viewUserTaskHistory(window.currentHistoryUserId, window.currentHistoryUserEmail)" class="bg-gray-300 px-4 py-2 rounded">&larr; Back to History</button></div></div>`;
+        }
+
+        function loadUserManagement() { adminContent.innerHTML = `<h1 class="text-3xl font-bold mb-6">User Management</h1><div id="users-list-admin" class="bg-white p-4 rounded-lg shadow overflow-x-auto"></div>`; onValue(ref(db, 'users'), s => { const c = document.getElementById('users-list-admin'); c.innerHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th><th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"></tbody></table>`; const t = c.querySelector('tbody'); if (!s.exists()) { t.innerHTML = `<tr><td colspan="3" class="text-center py-4">No users found.</td></tr>`; return; } let r = ''; s.forEach(ch => { const u = ch.val(); const email = u.email || 'No email'; r += `<tr><td class="px-6 py-4">${email}</td><td class="px-6 py-4">${u.points || 0}</td><td class="px-6 py-4 text-right"><button onclick="adjustUserPoints('${ch.key}', '${email}')" class="text-indigo-600 hover:text-indigo-900">Adjust Points</button></td></tr>`; }); t.innerHTML = r; }); }
+        
+        // ... (resto de funciones completas)
+        async function handleAdminLogout() { await signOut(auth); }
+        function loadRewardsManagement() { adminContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Rewards Management</h1><button onclick="openRewardModal()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Create</button></div><div id="rewards-list-admin" class="bg-white p-4 rounded-lg shadow overflow-x-auto"></div>`; onValue(ref(db, 'rewards'), s => { const c = document.getElementById('rewards-list-admin'); c.innerHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th><th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"></tbody></table>`; const t = c.querySelector('tbody'); if (!s.exists()) { t.innerHTML = `<tr><td colspan="4" class="text-center py-4">No rewards found.</td></tr>`; return; } let r = ''; s.forEach(ch => { const rw = ch.val(); r += `<tr><td class="px-6 py-4">${rw.title}</td><td class="px-6 py-4">${rw.pointsRequired}</td><td class="px-6 py-4 capitalize">${rw.type}</td><td class="px-6 py-4 text-right"><button onclick="openRewardModal('${ch.key}')" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button><button onclick="deleteReward('${ch.key}')" class="text-red-600 hover:text-red-900">Delete</button></td></tr>`; }); t.innerHTML = r; }); }
+        async function openRewardModal(id = null) { let r = {}; if(id) r = (await get(ref(db, `rewards/${id}`))).val(); modalContainer.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-screen overflow-y-auto"><form id="reward-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold">${id ? 'Edit' : 'Create'} Reward</h2><div><label>Title:</label><input type="text" id="reward-title" class="w-full border p-2 rounded" value="${r.title || ''}" required></div><div><label>Description:</label><textarea id="reward-desc" class="w-full border p-2 rounded">${r.description || ''}</textarea></div><div><label>Points Required:</label><input type="number" id="reward-points" class="w-full border p-2 rounded" value="${r.pointsRequired || ''}" required></div><div><label>Type:</label><input type="text" id="reward-type" class="w-full border p-2 rounded" value="${r.type || 'giftcard'}" placeholder="e.g., giftcard, promotion" required></div><div><label>Image (Base64):</label><input type="file" id="reward-image" class="w-full text-sm"></div><div class="flex justify-end space-x-4 pt-4"><button type="button" onclick="closeModal()" class="bg-gray-300 px-4 py-2 rounded">Cancel</button><button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save</button></div></form></div>`; modalContainer.classList.remove('hidden'); document.getElementById('reward-form').addEventListener('submit', e => saveReward(e, id)); }
+        async function saveReward(e, id) { e.preventDefault(); loader.classList.remove('hidden'); const imgFile = document.getElementById('reward-image').files[0]; const oldImg = id ? (await get(ref(db, `rewards/${id}/imageBase64`))).val() : ''; const img = imgFile ? await toBase64(imgFile) : oldImg; const d = { title: document.getElementById('reward-title').value, description: document.getElementById('reward-desc').value, pointsRequired: parseInt(document.getElementById('reward-points').value), type: document.getElementById('reward-type').value, imageBase64: img }; await set(id ? ref(db, `rewards/${id}`) : push(ref(db, 'rewards')), d); alert('Reward saved.'); closeModal(); loader.classList.add('hidden'); }
+        async function deleteReward(id) { if(confirm('Delete reward? This action is permanent.')) await remove(ref(db, `rewards/${id}`)); }
+        function loadTaskManagement() { adminContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Task Management</h1><button onclick="openTaskModal()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Create</button></div><div id="task-list-admin" class="bg-white p-4 rounded-lg shadow overflow-x-auto"></div>`; onValue(ref(db, 'tasks'), snapshot => { const container = document.getElementById('task-list-admin'); container.innerHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th><th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"></tbody></table>`; const tbody = container.querySelector('tbody'); if (!snapshot.exists()) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4">No tasks found.</td></tr>`; return; } let rows = ''; snapshot.forEach(child => { rows += `<tr><td class="px-6 py-4">${child.val().title}</td><td class="px-6 py-4 capitalize">${child.val().type}</td><td class="px-6 py-4">${child.val().points}</td><td class="px-6 py-4 text-right"><button onclick="openTaskModal('${child.key}')" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button><button onclick="deleteTask('${child.key}')" class="text-red-600 hover:text-red-900">Delete</button></td></tr>`; }); tbody.innerHTML = rows; }); }
+        async function openTaskModal(taskId = null) { let task = {}; if (taskId) task = (await get(ref(db, `tasks/${taskId}`))).val(); modalContainer.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-screen overflow-y-auto"><form id="task-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold">${taskId ? 'Edit' : 'Create'} Task</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label>Title:</label><input type="text" id="task-title" class="w-full border p-2 rounded" value="${task.title || ''}" required></div><div><label>Points:</label><input type="number" id="task-points" class="w-full border p-2 rounded" value="${task.points || ''}" required></div></div><div><label>Description:</label><textarea id="task-desc" class="w-full border p-2 rounded">${task.description || ''}</textarea></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label>Type:</label><select id="task-type" class="w-full border p-2 rounded"><option value="simple" ${task.type === 'simple' ? 'selected': ''}>Simple</option><option value="compound" ${task.type === 'compound' ? 'selected': ''}>Compound</option></select></div><div><label>Image (Base64):</label><input type="file" id="task-image" class="w-full text-sm"></div></div><div id="simple-task-fields" class="space-y-4 border-t pt-4"><h3 class="font-bold">Simple Task Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label>Platform:</label><input type="text" id="task-platform" placeholder="e.g., YouTube" class="w-full border p-2 rounded" value="${task.platform || ''}"></div><div><label>Target URL:</label><input type="url" id="task-targetURL" class="w-full border p-2 rounded" value="${task.targetURL || ''}"></div><div><label>Timer (sec):</label><input type="number" id="task-timer" class="w-full border p-2 rounded" value="${task.timerDuration || 0}"></div><div><label>Verification:</label><select id="task-verification" class="w-full border p-2 rounded"><option value="none">None</option><option value="photo">Photo</option><option value="question">Question</option><option value="both">Both</option></select></div></div><div id="simple-question-field" class="hidden"><label>Question Text:</label><input type="text" id="task-question" class="w-full border p-2 rounded"></div></div><div id="compound-task-fields" class="hidden space-y-4 border-t pt-4"><div class="flex justify-between items-center"><h3 class="font-bold">Compound Subtasks</h3><button type="button" onclick="addSubtask()" class="bg-blue-500 text-white text-sm px-3 py-1 rounded">+</button></div><div id="subtasks-container" class="space-y-4"></div></div><div class="flex justify-end space-x-4 pt-4"><button type="button" onclick="closeModal()" class="bg-gray-300 px-4 py-2 rounded">Cancel</button><button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save Task</button></div></form></div>`; modalContainer.classList.remove('hidden'); document.getElementById('task-type').addEventListener('change', toggleTaskTypeFields); document.getElementById('task-verification').addEventListener('change', (e) => toggleQuestionField(e.target.value, 'simple')); document.getElementById('task-form').addEventListener('submit', (e) => saveTask(e, taskId)); if(taskId) { if(task.type === 'simple') { document.getElementById('task-verification').value = task.verificationType; if(['question', 'both'].includes(task.verificationType)) { toggleQuestionField(task.verificationType, 'simple'); document.getElementById('task-question').value = task.questionText || ''; } } else if (task.type === 'compound' && task.subtasks) { task.subtasks.forEach(sub => addSubtask(sub)); } } toggleTaskTypeFields(); }
+        function addSubtask(subtask = {}) { const container = document.getElementById('subtasks-container'); const index = subtaskCounter++; const div = document.createElement('div'); div.className = 'p-4 border rounded bg-gray-50 relative'; div.innerHTML = `<button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 font-bold">&times;</button><p class="font-semibold mb-2">Subtask ${index + 1}</p><div class="grid grid-cols-1 md:grid-cols-2 gap-2"><div><label>Description:</label><input type="text" class="subtask-desc w-full border p-1 rounded" value="${subtask.description || ''}" required></div><div><label>Target URL:</label><input type="url" class="subtask-url w-full border p-1 rounded" value="${subtask.targetURL || ''}" required></div><div><label>Verification:</label><select class="subtask-verification w-full border p-1 rounded"><option value="none">None</option><option value="photo">Photo</option><option value="question">Question</option><option value="both">Both</option></select></div><div><label>Timer (sec, for YT):</label><input type="number" class="subtask-timer w-full border p-1 rounded" value="${subtask.timerDuration || 0}"></div></div><div id="subtask-question-field-${index}" class="hidden mt-2"><label>Question Text:</label><input type="text" class="subtask-question w-full border p-1 rounded" value="${subtask.questionText || ''}"></div>`; container.appendChild(div); div.querySelector('.subtask-verification').addEventListener('change', (e) => toggleQuestionField(e.target.value, 'compound', index)); if(subtask.verificationType){ div.querySelector('.subtask-verification').value = subtask.verificationType; toggleQuestionField(subtask.verificationType, 'compound', index); } }
+        async function saveTask(event, taskId) { event.preventDefault(); loader.classList.remove('hidden'); const imageFile = document.getElementById('task-image').files[0]; const oldImage = taskId ? (await get(ref(db, `tasks/${taskId}/imageBase64`))).val() : ''; const imageBase64 = imageFile ? await toBase64(imageFile) : oldImage; const taskData = { title: document.getElementById('task-title').value, description: document.getElementById('task-desc').value, points: parseInt(document.getElementById('task-points').value), type: document.getElementById('task-type').value, imageBase64 }; if (taskData.type === 'simple') { Object.assign(taskData, { platform: document.getElementById('task-platform').value, targetURL: document.getElementById('task-targetURL').value, timerDuration: parseInt(document.getElementById('task-timer').value) || 0, verificationType: document.getElementById('task-verification').value }); if (taskData.verificationType.includes('question')) taskData.questionText = document.getElementById('task-question').value; } else { taskData.subtasks = Array.from(document.querySelectorAll('#subtasks-container > div')).map(div => { const subtask = { description: div.querySelector('.subtask-desc').value, targetURL: div.querySelector('.subtask-url').value, verificationType: div.querySelector('.subtask-verification').value, timerDuration: parseInt(div.querySelector('.subtask-timer').value) || 0 }; if (subtask.verificationType.includes('question')) { subtask.questionText = div.querySelector('.subtask-question').value; } return subtask; }); } await set(taskId ? ref(db, `tasks/${taskId}`) : push(ref(db, 'tasks')), taskData); alert('Task saved!'); closeModal(); loader.classList.add('hidden'); }
+        async function deleteTask(taskId) { if (confirm('Are you sure?')) await remove(ref(db, `tasks/${taskId}`)); }
+        function loadVerifications() { adminContent.innerHTML = `<h1 class="text-3xl font-bold mb-6">Pending Verifications</h1><div id="verifications-list" class="space-y-4"></div>`; const q = query(ref(db, 'verifications'), orderByChild('status'), equalTo('pending')); onValue(q, snapshot => { const container = document.getElementById('verifications-list'); container.innerHTML = ''; if (!snapshot.exists()) { container.innerHTML = `<p class="text-center text-gray-500 bg-white p-4 rounded-lg shadow">No pending verifications.</p>`; return; } snapshot.forEach(child => { const v = child.val(); let subHTML = ''; if (v.submission?.photoBase64) { subHTML += `<img src="${v.submission.photoBase64}" class="w-24 h-24 object-cover rounded mt-2 cursor-pointer" onclick="viewImageModal('${v.submission.photoBase64}')">`; } if (v.submission?.answer) { subHTML += `<p class="mt-2"><strong>Answer:</strong> ${v.submission.answer}</p>`; } if (v.isCompound && typeof v.submission === 'object') { subHTML = '<h4 class="font-bold mt-2">Subtask Submissions:</h4><div class="pl-4 border-l-2 space-y-2">'; Object.keys(v.submission).sort().forEach(idx => { const sub = v.submission[idx]; subHTML += `<div><p><strong>Step ${parseInt(idx)+1}:</strong></p>${sub.answer ? `<p>Answer: ${sub.answer}</p>`:''}${sub.photoBase64 ? `<img src="${sub.photoBase64}" class="w-20 h-20 object-cover rounded mt-1 cursor-pointer" onclick="viewImageModal('${sub.photoBase64}')">`:''}</div>`; }); subHTML += '</div>'; } const card = `<div class="bg-white p-4 rounded-lg shadow"><div class="flex justify-between items-start"><div><h3 class="font-bold text-lg">${v.taskTitle}</h3><p class="text-sm text-gray-600">User: ${v.userEmail}</p></div><div class="flex space-x-2"><button onclick="handleVerification('${child.key}', 'approved')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">Approve</button><button onclick="handleVerification('${child.key}', 'rejected')" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Reject</button></div></div><div class="mt-2 p-2 bg-gray-50 rounded">${subHTML}</div></div>`; container.innerHTML += card; }); }); }
+        function loadRedemptions() { adminContent.innerHTML = `<h1 class="text-3xl font-bold mb-6">Pending Redemptions</h1><div id="redemptions-list" class="space-y-4"></div>`; const q = query(ref(db, 'redemptions'), orderByChild('status'), equalTo('pending')); onValue(q, snapshot => { const c = document.getElementById('redemptions-list'); c.innerHTML = ''; if (!snapshot.exists()) { c.innerHTML = `<p class="text-center text-gray-500 bg-white p-4 rounded-lg shadow">No pending redemptions.</p>`; return; } snapshot.forEach(child => { const r = child.val(); const e = r.promotionLink ? `<p class="mt-2"><strong>Link:</strong> <a href="${r.promotionLink}" target="_blank" class="text-blue-500 break-all">${r.promotionLink}</a></p>` : ''; c.innerHTML += `<div class="bg-white p-4 rounded-lg shadow"><div class="flex justify-between items-start"><div><h3 class="font-bold text-lg">${r.rewardTitle}</h3><p>User: ${r.userEmail}</p><p>Points: ${r.points}</p></div><div class="flex space-x-2"><button onclick="approveRedemption('${child.key}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">Approve</button><button onclick="rejectRedemption('${child.key}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Reject</button></div></div>${e}</div>`; }); }); }
+        function approveRedemption(id) { const d = prompt("Enter reward data (e.g., code):"); if(d) { update(ref(db, `redemptions/${id}`), { status: 'approved', rewardData: d }); alert('Redemption approved.'); } }
+        async function rejectRedemption(id) { const r = prompt("Enter rejection reason (optional):"); const d = (await get(ref(db, `redemptions/${id}`))).val(); await update(ref(db, `users/${d.userId}`), { points: increment(d.points) }); await update(ref(db, `redemptions/${id}`), { status: 'rejected', rejectionReason: r || 'Rejected' }); alert('Redemption rejected and points refunded.'); }
+        function loadPointPackages() { adminContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Point Packages</h1><button onclick="openPackageModal()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Create</button></div><div id="packages-list-admin" class="bg-white p-4 rounded-lg shadow overflow-x-auto"></div>`; onValue(ref(db, 'pointPackages'), s => { const c = document.getElementById('packages-list-admin'); c.innerHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price ($)</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Desc</th><th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"></tbody></table>`; const t = c.querySelector('tbody'); if (!s.exists()) { t.innerHTML = `<tr><td colspan="4" class="text-center py-4">No packages found.</td></tr>`; return; } let r = ''; s.forEach(ch => { const p = ch.val(); r += `<tr><td class="px-6 py-4">${p.points}</td><td class="px-6 py-4">${p.price.toFixed(2)}</td><td class="px-6 py-4">${p.description}</td><td class="px-6 py-4 text-right"><button onclick="openPackageModal('${ch.key}')" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button><button onclick="deletePackage('${ch.key}')" class="text-red-600 hover:text-red-900">Delete</button></td></tr>`; }); t.innerHTML = r; }); }
+        async function openPackageModal(id = null) { let p = {}; if(id) p = (await get(ref(db, `pointPackages/${id}`))).val(); modalContainer.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-md"><form id="pkg-form" class="p-6 space-y-4"><h2 class="text-2xl font-bold">${id ? 'Edit' : 'Create'} Package</h2><div><label>Points:</label><input type="number" id="pkg-points" class="w-full border p-2 rounded" value="${p.points || ''}" required></div><div><label>Price ($):</label><input type="number" step="0.01" id="pkg-price" class="w-full border p-2 rounded" value="${p.price || ''}" required></div><div><label>Description:</label><input type="text" id="pkg-desc" class="w-full border p-2 rounded" value="${p.description || ''}"></div><div class="flex justify-end space-x-4 pt-4"><button type="button" onclick="closeModal()" class="bg-gray-300 px-4 py-2 rounded">Cancel</button><button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save</button></div></form></div>`; modalContainer.classList.remove('hidden'); document.getElementById('pkg-form').addEventListener('submit', (e) => savePackage(e, id)); }
+        async function savePackage(e, id) { e.preventDefault(); const d = { points: parseInt(document.getElementById('pkg-points').value), price: parseFloat(document.getElementById('pkg-price').value), description: document.getElementById('pkg-desc').value }; await set(id ? ref(db, `pointPackages/${id}`) : push(ref(db, 'pointPackages')), d); alert('Package saved.'); closeModal(); }
+        async function deletePackage(id) { if(confirm('Delete package?')) await remove(ref(db, `pointPackages/${id}`)); }
+        function adjustUserPoints(id, email) { const a = parseInt(prompt(`Amount for ${email}.\nNegative to remove.`)); if (!isNaN(a) && a !== 0) { update(ref(db, `users/${id}`), { points: increment(a) }); alert(`Adjusted points by ${a}.`); } else if (a !== null) { alert('Invalid amount.'); } }
+        function viewImageModal(base64) { modalContainer.innerHTML = `<div class="bg-white p-4 rounded-lg shadow-xl max-w-3xl max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-2"><h3 class="text-lg font-bold">Verification Photo</h3><button onclick="closeModal()" class="text-2xl font-bold">&times;</button></div><div class="overflow-auto"><img src="${base64}" class="w-auto h-auto max-w-full max-h-full"></div></div>`; modalContainer.classList.add('flex'); modalContainer.classList.remove('hidden'); }
+        function closeModal() { modalContainer.innerHTML = ''; modalContainer.classList.add('hidden'); modalContainer.classList.remove('flex');}
+        const toBase64 = file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = reject; });
+        function toggleTaskTypeFields() { const t = document.getElementById('task-type').value; document.getElementById('simple-task-fields').style.display = t === 'simple' ? 'block' : 'none'; document.getElementById('compound-task-fields').style.display = t === 'compound' ? 'block' : 'none'; }
+        function toggleQuestionField(v, t, i = null) { const f = document.getElementById(t === 'simple' ? 'simple-question-field' : `subtask-question-field-${i}`); f.classList.toggle('hidden', !['question', 'both'].includes(v)); }
+
+        Object.assign(window, { navigateAdmin, handleAdminLogout, openTaskModal, deleteTask, addSubtask, closeModal, handleVerification, approveRedemption, rejectRedemption, openPackageModal, deletePackage, adjustUserPoints, viewImageModal, openRewardModal, deleteReward, viewUserTaskHistory, showProofModal });
+    </script>
+</body>
+</html>
